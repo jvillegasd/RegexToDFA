@@ -5,14 +5,10 @@
  */
 package arbol.sintactico;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author LinkRs
  */
-public interface Nodo {
+public class Nodo {
     
-    public void agregarHijo(Nodo hijo);
-    public ArrayList<Nodo> getHijos();
 }
