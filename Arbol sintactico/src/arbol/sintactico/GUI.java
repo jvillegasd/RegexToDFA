@@ -5,10 +5,13 @@
  */
 package arbol.sintactico;
 
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -19,8 +22,36 @@ public class GUI extends javax.swing.JFrame {
     /**
      * Creates new form GUI
      */
+    ArbolSintactico st = null;
+    AFD afd = null;
+    //String er = "(a|bb*)+aa(ab)?gb+";
+        //String er = "(a|b)*abb";
+        //String er = "(a|b(c|d)*)+";
+        //String er = "a&";
+    
     public GUI() {
         initComponents();
+    }
+    
+    private void DFS(Nodo actual, DefaultTableModel tableModel){
+        if(actual == null) return;
+        String ppos = String.join(", ", actual.getPpos().toString());
+        String upos = String.join(", ", actual.getUpos().toString());
+        tableModel.addRow(new Object[] {actual.getLabel(), ppos, upos});
+        DFS(actual.getHijoIzq(), tableModel);
+        DFS(actual.getHijoDer(), tableModel);
+    }
+    
+    private void setValores(){
+        DefaultTableModel tableModel = (DefaultTableModel)puTable.getModel();
+        alfaLabel.setText(afd.getAlfabeto());
+        DFS(st.getRaiz(), tableModel);
+        Set<Integer> sgtPos[] = st.getSgtPos();
+        tableModel = (DefaultTableModel)spTable.getModel();
+        for(int i = 1; i <= st.getCntCaracteres(); i++){
+            String conjPos = sgtPos[i].toString();
+            tableModel.addRow(new Object[] {i, conjPos});
+        }
     }
 
     /**
@@ -59,9 +90,17 @@ public class GUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Nodo", "Ppos", "Upos"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(puTable);
 
         javax.swing.GroupLayout puPanelLayout = new javax.swing.GroupLayout(puPanel);
@@ -87,9 +126,17 @@ public class GUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Posicion", "SgtPos"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(spTable);
 
         javax.swing.GroupLayout spPanelLayout = new javax.swing.GroupLayout(spPanel);
@@ -115,7 +162,7 @@ public class GUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1"
             }
         ));
         jScrollPane3.setViewportView(trandTable);
@@ -143,8 +190,18 @@ public class GUI extends javax.swing.JFrame {
         jLabel2.setText("Cadena a verificar:");
 
         arbolButton.setText("Arbol Sintactico");
+        arbolButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                arbolButtonActionPerformed(evt);
+            }
+        });
 
         verficarButton.setText("Verificar");
+        verficarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verficarButtonActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Alfabeto:");
 
@@ -204,6 +261,22 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void arbolButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arbolButtonActionPerformed
+        String er = regexTF.getText();
+        st = new ArbolSintactico(er);
+        st.crearArbol();
+        st.calculoPosiciones();
+        afd = new AFD(st, er);
+        afd.crearAFD();
+        setValores();
+    }//GEN-LAST:event_arbolButtonActionPerformed
+
+    private void verficarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verficarButtonActionPerformed
+        String cadena = cadenaTF.getText();
+        if(afd.reconoceCadena(cadena)) JOptionPane.showMessageDialog(null, "Se ha reconocido la cadena.");
+        else JOptionPane.showMessageDialog(null, "No se ha reconocido la cadena.");
+    }//GEN-LAST:event_verficarButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -235,17 +308,6 @@ public class GUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new GUI().setVisible(true);
-                try {
-                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InstantiationException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (UnsupportedLookAndFeelException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
         });
     }

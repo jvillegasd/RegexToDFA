@@ -42,6 +42,12 @@ public class AFD {
         for(int i = 0; i < er.length(); i++) if(esCaracter(er.charAt(i))) this.alfabeto.add(er.charAt(i));
     }
     
+    public String getAlfabeto(){
+        String alfa = "";
+        for(Character simbolo : alfabeto) alfa+=simbolo + ",";
+        return alfa.substring(0, alfa.length() - 1);
+    }
+    
     public void crearAFD(){
         estados_d = new ArrayList<>();
         Estado inicial = new Estado(++cntEstados);
@@ -101,19 +107,5 @@ public class AFD {
     public boolean reconoceCadena(String cadena){
         cadena = cadena.replace("&", "");
         return DFS(cadena, 0, 1);
-    }
-    
-    public void print(){
-        for(int i = 0; i <= cntCaracteres; i++){
-            if(!tranD[i].isEmpty()){
-                for(Character simbolo : alfabeto){
-                    if(tranD[i].get(simbolo) == null) continue;
-                    System.out.println("Estado: " + i + " con letra: " + simbolo + " Estado: " + tranD[i].get(simbolo));
-                }
-            }
-            if(i > 0 && i <= cntEstados && estados_d.get(i-1) != null) {
-                if(estados_d.get(i-1).esEstadoFinal()) System.out.println("Estado: " + i + " es de finalizacion");
-            }
-        }
     }
 }

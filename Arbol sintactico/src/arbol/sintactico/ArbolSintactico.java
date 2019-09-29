@@ -148,25 +148,6 @@ public class ArbolSintactico {
         postfixAArbol(postfix);
     }
     
-    private void preOrden(Nodo actual){
-        if(actual == null) return;
-        
-        System.out.println("Nodo:" + actual.getLabel());
-        System.out.println("Ppos:");
-        for(Integer i : actual.getPpos()) System.out.print(i + " ");
-        System.out.println("\n" + "Upos:");
-        for(Integer i : actual.getUpos()) System.out.print(i + " ");
-        System.out.println("");
-        System.out.println("");
-        
-        preOrden(actual.getHijoIzq());
-        preOrden(actual.getHijoDer());
-    }
-    
-    public void preOrden(){
-        this.preOrden(this.raiz);
-    }
-    
     private void unionPosiciones(Nodo actual, boolean esPpos){
         if(esPpos){
             Nodo hijoIzq = actual.getHijoIzq();
