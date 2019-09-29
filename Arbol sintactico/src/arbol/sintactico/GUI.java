@@ -5,6 +5,8 @@
  */
 package arbol.sintactico;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,10 +26,10 @@ public class GUI extends javax.swing.JFrame {
      */
     ArbolSintactico st = null;
     AFD afd = null;
-    //String er = "(a|bb*)+aa(ab)?gb+";
-        //String er = "(a|b)*abb";
-        //String er = "(a|b(c|d)*)+";
-        //String er = "a&";
+    /*
+        (a|bb*)+aa(ab)?gb+
+        (a|b(c|d)*)+
+    */
     
     public GUI() {
         initComponents();
@@ -42,9 +44,22 @@ public class GUI extends javax.swing.JFrame {
         DFS(actual.getHijoDer(), tableModel);
     }
     
+    private void resetValores(){
+        alfaLabel.setText("Vacio");
+        regexTF.setText("");
+        cadenaTF.setText("");
+        DefaultTableModel tableModel = (DefaultTableModel)puTable.getModel();
+        tableModel.setRowCount(0);
+        tableModel = (DefaultTableModel)spTable.getModel();
+        tableModel.setRowCount(0);
+        tableModel = (DefaultTableModel)trandTable.getModel();
+        tableModel.setColumnCount(0);
+        tableModel.setRowCount(0);
+    }
+    
     private void setValores(){
         DefaultTableModel tableModel = (DefaultTableModel)puTable.getModel();
-        alfaLabel.setText(afd.getAlfabeto());
+        alfaLabel.setText(afd.getAlfaString());
         DFS(st.getRaiz(), tableModel);
         Set<Integer> sgtPos[] = st.getSgtPos();
         tableModel = (DefaultTableModel)spTable.getModel();
@@ -52,6 +67,29 @@ public class GUI extends javax.swing.JFrame {
             String conjPos = sgtPos[i].toString();
             tableModel.addRow(new Object[] {i, conjPos});
         }
+        tableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int col){
+                return false;
+            }
+        };
+        tableModel.addColumn("Estado");
+        Set<Character> alfabeto = afd.getAlfabeto();
+        for(Character simbolo : alfabeto) tableModel.addColumn(simbolo);
+        Hashtable<Character,Integer> tranD[] = afd.getTranD();
+        for(int i = 1; i <= afd.getCntCaracteres(); i++){
+            ArrayList<Object> row = new ArrayList<>();
+            if(!tranD[i].isEmpty()){
+                String estadoFinal = "";
+                if(afd.esEstadoFinal(i)) estadoFinal = "*";
+                row.add(i + estadoFinal);
+                for(Character simbolo : alfabeto){
+                    if(tranD[i].get(simbolo) != null) row.add(tranD[i].get(simbolo));
+                }
+                tableModel.addRow(row.toArray());
+            }
+        }
+        trandTable.setModel(tableModel);
     }
 
     /**
@@ -82,6 +120,7 @@ public class GUI extends javax.swing.JFrame {
         verficarButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         alfaLabel = new javax.swing.JLabel();
+        reiniciarButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -162,7 +201,7 @@ public class GUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Title 1"
+
             }
         ));
         jScrollPane3.setViewportView(trandTable);
@@ -207,6 +246,13 @@ public class GUI extends javax.swing.JFrame {
 
         alfaLabel.setText("Vacio");
 
+        reiniciarButton.setText("Reiniciar");
+        reiniciarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reiniciarButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -217,20 +263,25 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
+                            .addComponent(jLabel2)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(22, 22, 22)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(regexTF)
-                            .addComponent(cadenaTF)
-                            .addComponent(alfaLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
+                            .addComponent(jLabel3))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(arbolButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(verficarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addComponent(lienzoJSP, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(regexTF, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(arbolButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(cadenaTF)
+                                    .addComponent(alfaLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(reiniciarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(verficarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addComponent(lienzoJSP, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -254,6 +305,8 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(verficarButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(reiniciarButton)
+                        .addGap(18, 18, 18)
                         .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
@@ -263,19 +316,29 @@ public class GUI extends javax.swing.JFrame {
 
     private void arbolButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arbolButtonActionPerformed
         String er = regexTF.getText();
-        st = new ArbolSintactico(er);
-        st.crearArbol();
-        st.calculoPosiciones();
-        afd = new AFD(st, er);
-        afd.crearAFD();
-        setValores();
+        if(!er.isBlank()){
+            resetValores();
+            regexTF.setText(er);
+            st = new ArbolSintactico(er);
+            st.crearArbol();
+            st.calculoPosiciones();
+            afd = new AFD(st, er);
+            afd.crearAFD();
+            setValores();
+        }
     }//GEN-LAST:event_arbolButtonActionPerformed
 
     private void verficarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verficarButtonActionPerformed
         String cadena = cadenaTF.getText();
-        if(afd.reconoceCadena(cadena)) JOptionPane.showMessageDialog(null, "Se ha reconocido la cadena.");
-        else JOptionPane.showMessageDialog(null, "No se ha reconocido la cadena.");
+        if(!cadena.isBlank() && afd != null){
+            if(afd.reconoceCadena(cadena)) JOptionPane.showMessageDialog(null, "Se ha reconocido la cadena.");
+            else JOptionPane.showMessageDialog(null, "No se ha reconocido la cadena.");
+        }
     }//GEN-LAST:event_verficarButtonActionPerformed
+
+    private void reiniciarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reiniciarButtonActionPerformed
+        resetValores();
+    }//GEN-LAST:event_reiniciarButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -327,6 +390,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel puPanel;
     private javax.swing.JTable puTable;
     private javax.swing.JTextField regexTF;
+    private javax.swing.JButton reiniciarButton;
     private javax.swing.JPanel spPanel;
     private javax.swing.JTable spTable;
     private javax.swing.JPanel trandPanel;

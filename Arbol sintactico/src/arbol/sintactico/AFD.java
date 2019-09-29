@@ -33,6 +33,18 @@ public class AFD {
         getAlfabeto(er);
     }
     
+    public int getCntCaracteres(){
+        return this.cntCaracteres;
+    }
+    
+    public Hashtable<Character,Integer>[] getTranD(){
+        return this.tranD;
+    }
+    
+    public boolean esEstadoFinal(int label){
+        return this.estados_d.get(label - 1).esEstadoFinal();
+    }
+    
     private boolean esCaracter(char simbolo){
         return Character.isLetterOrDigit(simbolo) || simbolo == '&' || simbolo == '#';
     }
@@ -42,10 +54,14 @@ public class AFD {
         for(int i = 0; i < er.length(); i++) if(esCaracter(er.charAt(i))) this.alfabeto.add(er.charAt(i));
     }
     
-    public String getAlfabeto(){
+    public String getAlfaString(){
         String alfa = "";
         for(Character simbolo : alfabeto) alfa+=simbolo + ",";
         return alfa.substring(0, alfa.length() - 1);
+    }
+    
+    public Set<Character> getAlfabeto(){
+        return this.alfabeto;
     }
     
     public void crearAFD(){
