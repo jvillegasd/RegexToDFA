@@ -37,6 +37,10 @@ public class AFD {
         return this.cntCaracteres;
     }
     
+    public int getCntEstados(){
+        return this.cntEstados;
+    }
+    
     public Hashtable<Character,Integer>[] getTranD(){
         return this.tranD;
     }

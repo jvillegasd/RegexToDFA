@@ -8,11 +8,7 @@ package arbol.sintactico;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -77,17 +73,15 @@ public class GUI extends javax.swing.JFrame {
         Set<Character> alfabeto = afd.getAlfabeto();
         for(Character simbolo : alfabeto) tableModel.addColumn(simbolo);
         Hashtable<Character,Integer> tranD[] = afd.getTranD();
-        for(int i = 1; i <= afd.getCntCaracteres(); i++){
+        for(int i = 1; i <= afd.getCntEstados(); i++){
             ArrayList<Object> row = new ArrayList<>();
-            if(!tranD[i].isEmpty()){
-                String estadoFinal = "";
-                if(afd.esEstadoFinal(i)) estadoFinal = "*";
-                row.add(i + estadoFinal);
-                for(Character simbolo : alfabeto){
-                    if(tranD[i].get(simbolo) != null) row.add(tranD[i].get(simbolo));
-                }
-                tableModel.addRow(row.toArray());
+            String estadoFinal = "";
+            if(afd.esEstadoFinal(i)) estadoFinal = "*";
+            row.add(i + estadoFinal);
+            for(Character simbolo : alfabeto){
+                if(tranD[i].get(simbolo) != null)row.add(tranD[i].get(simbolo));
             }
+            tableModel.addRow(row.toArray());
         }
         trandTable.setModel(tableModel);
     }
