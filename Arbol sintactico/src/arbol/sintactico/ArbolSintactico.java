@@ -170,11 +170,6 @@ public class ArbolSintactico {
         }
     }
     
-    /*
-        Problema a debuggear: ? tiene el mismo comportamiento que * y reconoce cadenas tipo:
-        er = a?, aaaaaa la reconoce
-    */
-    
     private void ppos_Upos(Nodo actual){
         if(esCaracter(actual.getLabel()) && actual.getLabel() != '&'){
             actual.setAnulable(false);
@@ -219,7 +214,6 @@ public class ArbolSintactico {
                 break;
             case '*':
             case '+':
-            case '?':
                 Set<Integer> pposC1 = actual.getHijoIzq().getPpos();
                 for(Integer i : uposC1) sgtPos[i].addAll(pposC1);
                 break;
