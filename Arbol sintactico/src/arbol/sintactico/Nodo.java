@@ -18,6 +18,7 @@ public class Nodo {
     private int posicion;
     private Set<Integer> ppos, upos;
     private boolean anulable = true;
+    private int numSeq = 0;
 
     public Nodo(char label){
         this.label = label;
@@ -84,4 +85,13 @@ public class Nodo {
     public void setAnulable(boolean anulable) {
         this.anulable = anulable;
     }
+
+    public int getNumSeq() {
+        return numSeq;
+    }
+
+    public void setNumSeq(int numSeq) {
+        this.numSeq = numSeq;
+    }
+    
 }

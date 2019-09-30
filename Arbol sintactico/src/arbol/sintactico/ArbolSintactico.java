@@ -1,5 +1,6 @@
 package arbol.sintactico;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -230,5 +231,19 @@ public class ArbolSintactico {
     
     public void calculoPosiciones(){
         this.calculoPosiciones(this.raiz);
+    }
+    
+    private void inOrden(Nodo actual, ArrayList<Nodo> inOrderSeq){
+        if(actual == null) return;
+        inOrden(actual.getHijoIzq(), inOrderSeq);
+        inOrderSeq.add(actual);
+        inOrden(actual.getHijoDer(), inOrderSeq);
+    }
+    
+    public void inOrden(){
+        ArrayList<Nodo> inOrderSeq = new ArrayList<>();
+        this.inOrden(this.raiz, inOrderSeq);
+        int cnt = 1;
+        for(Nodo actual : inOrderSeq) actual.setNumSeq(cnt++);
     }
 }

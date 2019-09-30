@@ -5,10 +5,12 @@
  */
 package arbol.sintactico;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollBar;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,6 +28,7 @@ public class GUI extends javax.swing.JFrame {
         (a|bb*)+aa(ab)?gb+
         (a|b(c|d)*)+
         a+bc?aa*b(((d|e)|&)+)?
+        (a|b)*abb
     */
     
     public GUI() {
@@ -40,8 +43,17 @@ public class GUI extends javax.swing.JFrame {
         DFS(actual.getHijoIzq(), tableModel);
         DFS(actual.getHijoDer(), tableModel);
     }
+    //https://users.cs.fiu.edu/~kraynek/COP3530-assignments/DrawBinaryTreeAssignment.html
+    private void paintTree(Nodo actual, Graphics g, int depth, int x, int y){
+        if(actual == null) return;
+        g.fillOval(x, y, 20, 20);
+        paintTree(actual.getHijoIzq(), g, depth + 1, x - 6*actual.getNumSeq(), y+10*depth);
+        paintTree(actual.getHijoDer(), g, depth + 1, x + 6*actual.getNumSeq(), y+10*depth);
+    }
     
     private void resetValores(){
+        Graphics g = lienzoJSP.getGraphics();
+        g.clearRect(0, 0, lienzoJSP.getWidth(), lienzoJSP.getHeight());
         alfaLabel.setText("Vacio");
         regexTF.setText("");
         cadenaTF.setText("");
@@ -83,6 +95,10 @@ public class GUI extends javax.swing.JFrame {
             tableModel.addRow(row.toArray());
         }
         trandTable.setModel(tableModel);
+        int x = lienzoJSP.getWidth()/2 + 50;
+        int y = 10;
+        paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y);
+        
     }
 
     /**
@@ -117,6 +133,9 @@ public class GUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        lienzoJSP.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        lienzoJSP.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
         puTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -146,9 +165,7 @@ public class GUI extends javax.swing.JFrame {
         );
         puPanelLayout.setVerticalGroup(
             puPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(puPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
         );
 
         panelPestañas.addTab("ppos_upos", puPanel);
@@ -182,9 +199,7 @@ public class GUI extends javax.swing.JFrame {
         );
         spPanelLayout.setVerticalGroup(
             spPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(spPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
         );
 
         panelPestañas.addTab("sgtpos", spPanel);
@@ -300,7 +315,7 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(reiniciarButton)
                         .addGap(9, 9, 9)
-                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
@@ -315,6 +330,7 @@ public class GUI extends javax.swing.JFrame {
             st = new ArbolSintactico(er);
             st.crearArbol();
             st.calculoPosiciones();
+            st.inOrden();
             afd = new AFD(st, er);
             afd.crearAFD();
             setValores();
