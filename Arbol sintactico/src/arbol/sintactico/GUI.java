@@ -5,6 +5,7 @@
  */
 package arbol.sintactico;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -29,6 +30,8 @@ public class GUI extends javax.swing.JFrame {
         (a|b(c|d)*)+
         a+bc?aa*b(((d|e)|&)+)?
         (a|b)*abb
+        (((af|bc)+abb)*fd)+ab
+        (ab|cd)*d*c?
     */
     
     public GUI() {
@@ -37,28 +40,35 @@ public class GUI extends javax.swing.JFrame {
     
     private void DFS(Nodo actual, DefaultTableModel tableModel){
         if(actual == null) return;
+        DFS(actual.getHijoIzq(), tableModel);
+        DFS(actual.getHijoDer(), tableModel);
         String ppos = String.join(", ", actual.getPpos().toString());
         String upos = String.join(", ", actual.getUpos().toString());
         tableModel.addRow(new Object[] {actual.getLabel(), ppos, upos});
-        DFS(actual.getHijoIzq(), tableModel);
-        DFS(actual.getHijoDer(), tableModel);
     }
     
-    private void paintTree(Nodo actual, Graphics g, int depth, int x, int y){
+    private void paintTree(Nodo actual, Graphics g, int depth, int x, int y, int ax, int ay){
         if(actual == null) return;
+        if(ax != -1 && ay != -1){
+            g.drawLine(ax + 10, ay + 10, x, y);
+        }
+        g.setColor(Color.YELLOW);
         g.fillOval(x, y, 20, 20);
+        String label = actual.getLabel() + "";
         Nodo hijoIzq = actual.getHijoIzq();
         Nodo hijoDer = actual.getHijoDer();
+        g.setColor(Color.BLACK);
+        g.drawString(label, x + 7, y + 14);
         boolean izqTieneDer = (hijoIzq != null && hijoIzq.getHijoDer() != null);
         boolean derTieneIzq = (hijoDer != null && hijoDer.getHijoIzq() != null);
         int nx = 30;
         int ny = 30;
         if(izqTieneDer && derTieneIzq){
-            paintTree(hijoIzq, g, depth + 1, x - nx - 30, y + ny);
-            paintTree(hijoDer, g, depth + 1, x + nx, y + ny);
+            paintTree(hijoIzq, g, depth + 1, x - nx - 30, y + ny, x, y);
+            paintTree(hijoDer, g, depth + 1, x + nx, y + ny, x, y);
         } else{
-            paintTree(hijoIzq, g, depth + 1, x - nx, y + ny);
-            paintTree(hijoDer, g, depth + 1, x + nx, y + ny);
+            paintTree(hijoIzq, g, depth + 1, x - nx, y + ny, x, y);
+            paintTree(hijoDer, g, depth + 1, x + nx, y + ny, x, y);
         }
     }
     
@@ -108,7 +118,7 @@ public class GUI extends javax.swing.JFrame {
         trandTable.setModel(tableModel);
         int x = lienzoJSP.getWidth()/2+100;
         int y = 10;
-        paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y);
+        paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y, -1, -1);
         
     }
 
@@ -277,7 +287,7 @@ public class GUI extends javax.swing.JFrame {
         );
         lienzoJSPLayout.setVerticalGroup(
             lienzoJSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 384, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -314,12 +324,9 @@ public class GUI extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lienzoJSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(regexTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -336,8 +343,10 @@ public class GUI extends javax.swing.JFrame {
                         .addGap(37, 37, 37)
                         .addComponent(reiniciarButton)
                         .addGap(9, 9, 9)
-                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(32, Short.MAX_VALUE))
+                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 107, Short.MAX_VALUE))
+                    .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
