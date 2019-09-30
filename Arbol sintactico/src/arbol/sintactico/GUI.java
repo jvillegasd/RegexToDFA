@@ -78,9 +78,7 @@ public class GUI extends javax.swing.JFrame {
             String estadoFinal = "";
             if(afd.esEstadoFinal(i)) estadoFinal = "*";
             row.add(i + estadoFinal);
-            for(Character simbolo : alfabeto){
-                if(tranD[i].get(simbolo) != null)row.add(tranD[i].get(simbolo));
-            }
+            for(Character simbolo : alfabeto) row.add(tranD[i].get(simbolo));
             tableModel.addRow(row.toArray());
         }
         trandTable.setModel(tableModel);
@@ -300,8 +298,8 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(verficarButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(reiniciarButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(9, 9, 9)
+                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 

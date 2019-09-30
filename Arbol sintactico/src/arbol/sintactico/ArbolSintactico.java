@@ -17,7 +17,7 @@ public class ArbolSintactico {
     private int cntCaracteres = 0;
    
     public ArbolSintactico(String er){
-        this.er = er + "#";
+        this.er = "(" + er + ")#";
         this.raiz = new Nodo('.');
         this.pos = new Hashtable<>();
         this.initPos();
@@ -169,6 +169,11 @@ public class ArbolSintactico {
             }
         }
     }
+    
+    /*
+        Problema a debuggear: ? tiene el mismo comportamiento que * y reconoce cadenas tipo:
+        er = a?, aaaaaa la reconoce
+    */
     
     private void ppos_Upos(Nodo actual){
         if(esCaracter(actual.getLabel()) && actual.getLabel() != '&'){
