@@ -43,12 +43,23 @@ public class GUI extends javax.swing.JFrame {
         DFS(actual.getHijoIzq(), tableModel);
         DFS(actual.getHijoDer(), tableModel);
     }
-    //https://users.cs.fiu.edu/~kraynek/COP3530-assignments/DrawBinaryTreeAssignment.html
+    
     private void paintTree(Nodo actual, Graphics g, int depth, int x, int y){
         if(actual == null) return;
         g.fillOval(x, y, 20, 20);
-        paintTree(actual.getHijoIzq(), g, depth + 1, x - 6*actual.getNumSeq(), y+10*depth);
-        paintTree(actual.getHijoDer(), g, depth + 1, x + 6*actual.getNumSeq(), y+10*depth);
+        Nodo hijoIzq = actual.getHijoIzq();
+        Nodo hijoDer = actual.getHijoDer();
+        boolean izqTieneDer = (hijoIzq != null && hijoIzq.getHijoDer() != null);
+        boolean derTieneIzq = (hijoDer != null && hijoDer.getHijoIzq() != null);
+        int nx = 30;
+        int ny = 30;
+        if(izqTieneDer && derTieneIzq){
+            paintTree(hijoIzq, g, depth + 1, x - nx - 30, y + ny);
+            paintTree(hijoDer, g, depth + 1, x + nx, y + ny);
+        } else{
+            paintTree(hijoIzq, g, depth + 1, x - nx, y + ny);
+            paintTree(hijoDer, g, depth + 1, x + nx, y + ny);
+        }
     }
     
     private void resetValores(){
@@ -95,7 +106,7 @@ public class GUI extends javax.swing.JFrame {
             tableModel.addRow(row.toArray());
         }
         trandTable.setModel(tableModel);
-        int x = lienzoJSP.getWidth()/2 + 50;
+        int x = lienzoJSP.getWidth()/2+100;
         int y = 10;
         paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y);
         
@@ -110,7 +121,6 @@ public class GUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lienzoJSP = new javax.swing.JScrollPane();
         panelPestañas = new javax.swing.JTabbedPane();
         puPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -130,11 +140,9 @@ public class GUI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         alfaLabel = new javax.swing.JLabel();
         reiniciarButton = new javax.swing.JButton();
+        lienzoJSP = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        lienzoJSP.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        lienzoJSP.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         puTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -261,6 +269,17 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout lienzoJSPLayout = new javax.swing.GroupLayout(lienzoJSP);
+        lienzoJSP.setLayout(lienzoJSPLayout);
+        lienzoJSPLayout.setHorizontalGroup(
+            lienzoJSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 583, Short.MAX_VALUE)
+        );
+        lienzoJSPLayout.setVerticalGroup(
+            lienzoJSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 384, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -288,17 +307,19 @@ public class GUI extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(reiniciarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(verficarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addComponent(lienzoJSP, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(lienzoJSP, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lienzoJSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(regexTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -312,7 +333,7 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(cadenaTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)
                             .addComponent(verficarButton))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(37, 37, 37)
                         .addComponent(reiniciarButton)
                         .addGap(9, 9, 9)
                         .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -324,7 +345,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void arbolButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arbolButtonActionPerformed
         String er = regexTF.getText();
-        if(!er.isBlank()){
+        if(!er.isEmpty()){
             resetValores();
             regexTF.setText(er);
             st = new ArbolSintactico(er);
@@ -339,7 +360,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void verficarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verficarButtonActionPerformed
         String cadena = cadenaTF.getText();
-        if(!cadena.isBlank() && afd != null){
+        if(!cadena.isEmpty() && afd != null){
             if(afd.reconoceCadena(cadena)) JOptionPane.showMessageDialog(null, "Se ha reconocido la cadena.");
             else JOptionPane.showMessageDialog(null, "No se ha reconocido la cadena.");
         }
@@ -394,7 +415,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane lienzoJSP;
+    private javax.swing.JPanel lienzoJSP;
     private javax.swing.JTabbedPane panelPestañas;
     private javax.swing.JPanel puPanel;
     private javax.swing.JTable puTable;
