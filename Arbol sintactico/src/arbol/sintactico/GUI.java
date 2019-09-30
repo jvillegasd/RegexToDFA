@@ -49,9 +49,6 @@ public class GUI extends javax.swing.JFrame {
     
     private void paintTree(Nodo actual, Graphics g, int depth, int x, int y, int ax, int ay){
         if(actual == null) return;
-        if(ax != -1 && ay != -1){
-            g.drawLine(ax + 10, ay + 10, x, y);
-        }
         g.setColor(Color.YELLOW);
         g.fillOval(x, y, 20, 20);
         String label = actual.getLabel() + "";
@@ -63,10 +60,19 @@ public class GUI extends javax.swing.JFrame {
         boolean derTieneIzq = (hijoDer != null && hijoDer.getHijoIzq() != null);
         int nx = 30;
         int ny = 30;
+        
         if(izqTieneDer && derTieneIzq){
+            if(ax != -1 && ay != -1){
+                g.drawLine(ax + 10, ay + 10, x - 12, y);
+                g.drawLine(ax + 10, ay + 10, x + 10, y);
+            }
             paintTree(hijoIzq, g, depth + 1, x - nx - 30, y + ny, x, y);
             paintTree(hijoDer, g, depth + 1, x + nx, y + ny, x, y);
         } else{
+            if(ax != -1 && ay != -1){
+                g.drawLine(ax + 10, ay + 10, x - 12, y);
+                g.drawLine(ax + 10, ay + 10, x + 10, y);
+            }
             paintTree(hijoIzq, g, depth + 1, x - nx, y + ny, x, y);
             paintTree(hijoDer, g, depth + 1, x + nx, y + ny, x, y);
         }
@@ -84,6 +90,8 @@ public class GUI extends javax.swing.JFrame {
         tableModel.setRowCount(0);
         tableModel = (DefaultTableModel)trandTable.getModel();
         tableModel.setColumnCount(0);
+        tableModel.setRowCount(0);
+        tableModel = (DefaultTableModel) ceTable.getModel();
         tableModel.setRowCount(0);
     }
     
@@ -119,7 +127,10 @@ public class GUI extends javax.swing.JFrame {
         int x = lienzoJSP.getWidth()/2+100;
         int y = 10;
         paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y, -1, -1);
-        
+        tableModel = (DefaultTableModel) ceTable.getModel();
+        for(int i = 1; i <= afd.getCntEstados(); i++){
+            tableModel.addRow(new Object[] {i, afd.getConjEstados(i).toString()});
+        }
     }
 
     /**
@@ -132,15 +143,14 @@ public class GUI extends javax.swing.JFrame {
     private void initComponents() {
 
         panelPestañas = new javax.swing.JTabbedPane();
-        puPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         puTable = new javax.swing.JTable();
-        spPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         spTable = new javax.swing.JTable();
-        trandPanel = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         trandTable = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ceTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         regexTF = new javax.swing.JTextField();
         cadenaTF = new javax.swing.JTextField();
@@ -172,21 +182,7 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(puTable);
 
-        javax.swing.GroupLayout puPanelLayout = new javax.swing.GroupLayout(puPanel);
-        puPanel.setLayout(puPanelLayout);
-        puPanelLayout.setHorizontalGroup(
-            puPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(puPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        puPanelLayout.setVerticalGroup(
-            puPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-        );
-
-        panelPestañas.addTab("ppos_upos", puPanel);
+        panelPestañas.addTab("ppos_upos", jScrollPane1);
 
         spTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -206,21 +202,7 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(spTable);
 
-        javax.swing.GroupLayout spPanelLayout = new javax.swing.GroupLayout(spPanel);
-        spPanel.setLayout(spPanelLayout);
-        spPanelLayout.setHorizontalGroup(
-            spPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(spPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        spPanelLayout.setVerticalGroup(
-            spPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-        );
-
-        panelPestañas.addTab("sgtpos", spPanel);
+        panelPestañas.addTab("sgtpos", jScrollPane2);
 
         trandTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -232,23 +214,27 @@ public class GUI extends javax.swing.JFrame {
         ));
         jScrollPane3.setViewportView(trandTable);
 
-        javax.swing.GroupLayout trandPanelLayout = new javax.swing.GroupLayout(trandPanel);
-        trandPanel.setLayout(trandPanelLayout);
-        trandPanelLayout.setHorizontalGroup(
-            trandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(trandPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        trandPanelLayout.setVerticalGroup(
-            trandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(trandPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        panelPestañas.addTab("TranD", jScrollPane3);
 
-        panelPestañas.addTab("TranD", trandPanel);
+        ceTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Estado", "ConjEstados"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(ceTable);
+
+        panelPestañas.addTab("ConjEstados", jScrollPane4);
 
         jLabel1.setText("Expresion regular:");
 
@@ -283,11 +269,11 @@ public class GUI extends javax.swing.JFrame {
         lienzoJSP.setLayout(lienzoJSPLayout);
         lienzoJSPLayout.setHorizontalGroup(
             lienzoJSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 583, Short.MAX_VALUE)
+            .addGap(0, 580, Short.MAX_VALUE)
         );
         lienzoJSPLayout.setVerticalGroup(
             lienzoJSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 491, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -297,7 +283,6 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
@@ -316,8 +301,11 @@ public class GUI extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(reiniciarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(verficarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addGap(15, 15, 15)
+                                    .addComponent(verficarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(32, 32, 32))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
                 .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -342,9 +330,9 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(verficarButton))
                         .addGap(37, 37, 37)
                         .addComponent(reiniciarButton)
-                        .addGap(9, 9, 9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 107, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -418,21 +406,20 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel alfaLabel;
     private javax.swing.JButton arbolButton;
     private javax.swing.JTextField cadenaTF;
+    private javax.swing.JTable ceTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPanel lienzoJSP;
     private javax.swing.JTabbedPane panelPestañas;
-    private javax.swing.JPanel puPanel;
     private javax.swing.JTable puTable;
     private javax.swing.JTextField regexTF;
     private javax.swing.JButton reiniciarButton;
-    private javax.swing.JPanel spPanel;
     private javax.swing.JTable spTable;
-    private javax.swing.JPanel trandPanel;
     private javax.swing.JTable trandTable;
     private javax.swing.JButton verficarButton;
     // End of variables declaration//GEN-END:variables

@@ -33,6 +33,10 @@ public class AFD {
         getAlfabeto(er);
     }
     
+    public Set<Integer> getConjEstados(int label){
+        return estados_d.get(label - 1).getConjPos();
+    }
+    
     public int getCntCaracteres(){
         return this.cntCaracteres;
     }
