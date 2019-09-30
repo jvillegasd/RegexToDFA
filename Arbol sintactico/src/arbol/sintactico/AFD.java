@@ -50,7 +50,7 @@ public class AFD {
     }
     
     private boolean esCaracter(char simbolo){
-        return Character.isLetterOrDigit(simbolo) || simbolo == '&' || simbolo == '#';
+        return Character.isLetterOrDigit(simbolo) || simbolo == '#';
     }
     
     private void getAlfabeto(String er){

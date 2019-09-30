@@ -25,6 +25,7 @@ public class GUI extends javax.swing.JFrame {
     /*
         (a|bb*)+aa(ab)?gb+
         (a|b(c|d)*)+
+        a+bc?aa*b(((d|e)|&)+)?
     */
     
     public GUI() {
