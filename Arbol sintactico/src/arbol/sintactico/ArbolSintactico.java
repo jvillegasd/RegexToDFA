@@ -1,6 +1,5 @@
 package arbol.sintactico;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -16,17 +15,19 @@ public class ArbolSintactico {
     private Set<Integer> sgtPos[];
     private Hashtable<Character, Set<Integer>> pos = null;
     private int cntCaracteres = 0;
+    private int indice = 0;
    
     public ArbolSintactico(String er){
         this.er = "(" + er + ")#";
         this.raiz = new Nodo('.');
         this.pos = new Hashtable<>();
+        this.indice = 0;
         this.initPos();
     }
     
     private void initPos(){
         for(int i = 0; i < er.length(); i++){
-            if(esCaracter(er.charAt(i))){
+            if(esCaracter(er.charAt(i)) && er.charAt(i) != '&'){
                 if(pos.get(er.charAt(i)) == null) pos.put(er.charAt(i), new HashSet<>());
                 pos.get(er.charAt(i)).add(++cntCaracteres);
             }
@@ -126,7 +127,7 @@ public class ArbolSintactico {
             char simbolo = postfix.charAt(i);
             if(!esOperador(simbolo)){
                 actual = new Nodo(simbolo);
-                actual.setPosicion(cnt++);
+                if(simbolo != '&') actual.setPosicion(cnt++);
                 s.push(actual);
             }else{
                 actual = new Nodo(simbolo);
@@ -225,20 +226,21 @@ public class ArbolSintactico {
     
     private void calculoPosiciones(Nodo actual){
         if(actual == null) return;
-        calculoPosiciones(actual.getHijoIzq());
-        calculoPosiciones(actual.getHijoDer());
+        Nodo hijoIzq = actual.getHijoIzq();
+        Nodo hijoDer = actual.getHijoDer();
+        calculoPosiciones(hijoIzq);
+        calculoPosiciones(hijoDer);
+        actual.setIndice(++indice);
         ppos_Upos(actual);
         if(esOperador(actual.getLabel())) sgtPost(actual);
+        if(actual.esHoja()) actual.setNumHijos(1);
+        else{
+            if(hijoIzq != null) actual.setNumHijos(hijoIzq.getNumHijos());
+            if(hijoDer != null) actual.setNumHijos(hijoDer.getNumHijos());
+        }
     }
     
     public void calculoPosiciones(){
         this.calculoPosiciones(this.raiz);
-    }
-    
-    private void inOrden(Nodo actual, ArrayList<Nodo> inOrderSeq){
-        if(actual == null) return;
-        inOrden(actual.getHijoIzq(), inOrderSeq);
-        inOrderSeq.add(actual);
-        inOrden(actual.getHijoDer(), inOrderSeq);
     }
 }

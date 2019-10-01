@@ -18,6 +18,8 @@ public class Nodo {
     private int posicion;
     private Set<Integer> ppos, upos;
     private boolean anulable = true;
+    private int numHijos = 0;
+    private int indice = 0;
 
     public Nodo(char label){
         this.label = label;
@@ -84,4 +86,24 @@ public class Nodo {
     public void setAnulable(boolean anulable) {
         this.anulable = anulable;
     }   
+
+    public int getNumHijos() {
+        return numHijos;
+    }
+
+    public void setNumHijos(int numHijos) {
+        this.numHijos += numHijos;
+    }
+    
+    public boolean esHoja(){
+        return hijoDer == null && hijoIzq == null;
+    }
+
+    public int getIndice() {
+        return indice;
+    }
+
+    public void setIndice(int indice) {
+        this.indice = indice;
+    }
 }

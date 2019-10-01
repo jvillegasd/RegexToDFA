@@ -22,8 +22,8 @@ public class GUI extends javax.swing.JFrame {
     /**
      * Creates new form GUI
      */
-    ArbolSintactico st = null;
-    AFD afd = null;
+    private ArbolSintactico st = null;
+    private AFD afd = null;
     /*
         (a|bb*)+aa(ab)?gb+
         (a|b(c|d)*)+
@@ -45,31 +45,36 @@ public class GUI extends javax.swing.JFrame {
         DFS(actual.getHijoDer(), tableModel);
         String ppos = String.join(", ", actual.getPpos().toString());
         String upos = String.join(", ", actual.getUpos().toString());
-        tableModel.addRow(new Object[] {actual.getLabel(), ppos, upos});
+        tableModel.addRow(new Object[] {actual.getLabel(), ppos, upos, actual.getIndice()});
     }
     
     private void paintTree(Nodo actual, Graphics g, int depth, int x, int y){
         if(actual == null) return;
         Nodo hijoIzq = actual.getHijoIzq();
         Nodo hijoDer = actual.getHijoDer();
-        boolean izqTieneDer = (hijoIzq != null && hijoIzq.getHijoDer() != null);
-        boolean derTieneIzq = (hijoDer != null && hijoDer.getHijoIzq() != null);
         int offsetX = 30;
-        int offsetY = 30;
-        if(izqTieneDer && derTieneIzq){
-            if(hijoIzq != null) g.drawLine(x + 10, y + 10, x - offsetX - 30 + 10, y + offsetY);
-            paintTree(hijoIzq, g, depth + 1, x - offsetX - 30, y + offsetY);
-        } else{
-            if(hijoIzq != null) g.drawLine(x + 10, y + 10, x - offsetX + 10, y + offsetY);
-            paintTree(hijoIzq, g, depth + 1, x - offsetX, y + offsetY);  
+        int offsetY = 25;
+        int hijosIzq = 0;
+        int hijosDer = 0;
+        if(hijoIzq != null){
+            hijosIzq = hijoIzq.getNumHijos();
+            hijosIzq = (hijosIzq == 1)?0:hijosIzq*5;
+            g.drawLine(x, y, x - offsetX - hijosIzq + 10, y + offsetY);
+            paintTree(hijoIzq, g, depth + 1, x - offsetX - hijosIzq + 10, y + offsetY);
         }
-        if(hijoDer!= null) g.drawLine(x + 10, y + 10, x + offsetX + 10, y + offsetY);
-        paintTree(hijoDer, g, depth + 1, x + offsetX, y + offsetY);
+        if(hijoDer!= null){
+            hijosDer = hijoDer.getNumHijos();
+            hijosDer = (hijosDer == 1)?0:hijosDer*5;
+            g.drawLine(x, y, x + offsetX + hijosDer - 10, y + offsetY);
+            paintTree(hijoDer, g, depth + 1, x + offsetX + hijosDer - 10, y + offsetY);
+        }
         g.setColor(Color.YELLOW);
-        g.fillOval(x, y, 20, 20);
+        g.fillOval(x - 10, y - 10, 20, 20);
         String label = actual.getLabel() + "";
+        String indiceS = actual.getIndice() + "";
         g.setColor(Color.BLACK);
-        g.drawString(label, x + 7, y + 14);
+        g.drawString(label, x - 3, y + 5);
+        g.drawString(indiceS, x - 3, y + 20);
     }
     
     public void paintTree(){
@@ -174,11 +179,11 @@ public class GUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nodo", "Ppos", "Upos"
+                "Nodo", "Ppos", "Upos", "Indice"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
