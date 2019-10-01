@@ -63,7 +63,8 @@ public class ArbolSintactico {
     private boolean puedeConcatenar(char actual, char sgt){
         return (esCaracter(actual) && esCaracter(sgt)) || (actual == ')' && sgt == '(') 
                 || ((actual == '*' || actual == ')') && esCaracter(sgt)) || (esCaracter(actual) && sgt == '(')
-                || (actual == '?' && (esCaracter(sgt) || sgt == '(') || (actual == '+' && (esCaracter(sgt) || sgt == '(')));
+                || (actual == '?' && (esCaracter(sgt) || sgt == '(') || (actual == '+' && (esCaracter(sgt) || sgt == '(')))
+                || (actual == '*' && sgt == '(');
     }
     
     private void normalizarER(){
@@ -73,6 +74,7 @@ public class ArbolSintactico {
             String prefijo = er.substring(0, i + 1);
             String sufijo = er.substring(i + 1);
             if(puedeConcatenar(actual, sgt)) er = prefijo + "." + sufijo;
+            
         }
     }
     
@@ -238,12 +240,5 @@ public class ArbolSintactico {
         inOrden(actual.getHijoIzq(), inOrderSeq);
         inOrderSeq.add(actual);
         inOrden(actual.getHijoDer(), inOrderSeq);
-    }
-    
-    public void inOrden(){
-        ArrayList<Nodo> inOrderSeq = new ArrayList<>();
-        this.inOrden(this.raiz, inOrderSeq);
-        int cnt = 1;
-        for(Nodo actual : inOrderSeq) actual.setNumSeq(cnt++);
     }
 }

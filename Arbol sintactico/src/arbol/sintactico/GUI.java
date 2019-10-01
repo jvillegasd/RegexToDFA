@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollBar;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -32,6 +31,8 @@ public class GUI extends javax.swing.JFrame {
         (a|b)*abb
         (((af|bc)+abb)*fd)+ab
         (ab|cd)*d*c?
+        ((a|b(dcab*|b+)?abbf+)*)?a+c
+        (a|b|c|d)*(hola)?
     */
     
     public GUI() {
@@ -47,38 +48,40 @@ public class GUI extends javax.swing.JFrame {
         tableModel.addRow(new Object[] {actual.getLabel(), ppos, upos});
     }
     
-    private void paintTree(Nodo actual, Graphics g, int depth, int x, int y, int ax, int ay){
+    private void paintTree(Nodo actual, Graphics g, int depth, int x, int y){
         if(actual == null) return;
+        Nodo hijoIzq = actual.getHijoIzq();
+        Nodo hijoDer = actual.getHijoDer();
+        boolean izqTieneDer = (hijoIzq != null && hijoIzq.getHijoDer() != null);
+        boolean derTieneIzq = (hijoDer != null && hijoDer.getHijoIzq() != null);
+        int offsetX = 30;
+        int offsetY = 30;
+        if(izqTieneDer && derTieneIzq){
+            if(hijoIzq != null) g.drawLine(x + 10, y + 10, x - offsetX - 30 + 10, y + offsetY);
+            paintTree(hijoIzq, g, depth + 1, x - offsetX - 30, y + offsetY);
+        } else{
+            if(hijoIzq != null) g.drawLine(x + 10, y + 10, x - offsetX + 10, y + offsetY);
+            paintTree(hijoIzq, g, depth + 1, x - offsetX, y + offsetY);  
+        }
+        if(hijoDer!= null) g.drawLine(x + 10, y + 10, x + offsetX + 10, y + offsetY);
+        paintTree(hijoDer, g, depth + 1, x + offsetX, y + offsetY);
         g.setColor(Color.YELLOW);
         g.fillOval(x, y, 20, 20);
         String label = actual.getLabel() + "";
-        Nodo hijoIzq = actual.getHijoIzq();
-        Nodo hijoDer = actual.getHijoDer();
         g.setColor(Color.BLACK);
         g.drawString(label, x + 7, y + 14);
-        boolean izqTieneDer = (hijoIzq != null && hijoIzq.getHijoDer() != null);
-        boolean derTieneIzq = (hijoDer != null && hijoDer.getHijoIzq() != null);
-        int nx = 30;
-        int ny = 30;
-        
-        if(izqTieneDer && derTieneIzq){
-            if(ax != -1 && ay != -1){
-                g.drawLine(ax + 10, ay + 10, x - 12, y);
-                g.drawLine(ax + 10, ay + 10, x + 10, y);
-            }
-            paintTree(hijoIzq, g, depth + 1, x - nx - 30, y + ny, x, y);
-            paintTree(hijoDer, g, depth + 1, x + nx, y + ny, x, y);
-        } else{
-            if(ax != -1 && ay != -1){
-                g.drawLine(ax + 10, ay + 10, x - 12, y);
-                g.drawLine(ax + 10, ay + 10, x + 10, y);
-            }
-            paintTree(hijoIzq, g, depth + 1, x - nx, y + ny, x, y);
-            paintTree(hijoDer, g, depth + 1, x + nx, y + ny, x, y);
-        }
+    }
+    
+    public void paintTree(){
+        int x = lienzoJSP.getWidth()/2+200;
+        int y = 10;
+        paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y);
     }
     
     private void resetValores(){
+        st = null;
+        afd = null;
+        stLabel.setText("Arbol sintactico de:");
         Graphics g = lienzoJSP.getGraphics();
         g.clearRect(0, 0, lienzoJSP.getWidth(), lienzoJSP.getHeight());
         alfaLabel.setText("Vacio");
@@ -96,6 +99,8 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private void setValores(){
+        String labelText = stLabel.getText();
+        stLabel.setText(labelText + " " + regexTF.getText());
         DefaultTableModel tableModel = (DefaultTableModel)puTable.getModel();
         alfaLabel.setText(afd.getAlfaString());
         DFS(st.getRaiz(), tableModel);
@@ -124,9 +129,7 @@ public class GUI extends javax.swing.JFrame {
             tableModel.addRow(row.toArray());
         }
         trandTable.setModel(tableModel);
-        int x = lienzoJSP.getWidth()/2+100;
-        int y = 10;
-        paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y, -1, -1);
+        paintTree();
         tableModel = (DefaultTableModel) ceTable.getModel();
         for(int i = 1; i <= afd.getCntEstados(); i++){
             tableModel.addRow(new Object[] {i, afd.getConjEstados(i).toString()});
@@ -161,6 +164,8 @@ public class GUI extends javax.swing.JFrame {
         alfaLabel = new javax.swing.JLabel();
         reiniciarButton = new javax.swing.JButton();
         lienzoJSP = new javax.swing.JPanel();
+        stLabel = new javax.swing.JLabel();
+        repaintBT = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -273,8 +278,17 @@ public class GUI extends javax.swing.JFrame {
         );
         lienzoJSPLayout.setVerticalGroup(
             lienzoJSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 491, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        stLabel.setText("Arbol sintactico de:");
+
+        repaintBT.setText("Repintar");
+        repaintBT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                repaintBTActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -304,37 +318,49 @@ public class GUI extends javax.swing.JFrame {
                                     .addComponent(verficarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(32, 32, 32))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(repaintBT, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)))
-                .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(229, 229, 229)
+                        .addComponent(stLabel)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(regexTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(arbolButton))
-                        .addGap(22, 22, 22)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(alfaLabel))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cadenaTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(verficarButton))
-                        .addGap(37, 37, 37)
-                        .addComponent(reiniciarButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(regexTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arbolButton))
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(alfaLabel))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cadenaTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(verficarButton))
+                .addGap(37, 37, 37)
+                .addComponent(reiniciarButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(panelPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(repaintBT)
+                .addContainerGap(75, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(stLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lienzoJSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(16, 16, 16))
         );
 
         pack();
@@ -348,7 +374,6 @@ public class GUI extends javax.swing.JFrame {
             st = new ArbolSintactico(er);
             st.crearArbol();
             st.calculoPosiciones();
-            st.inOrden();
             afd = new AFD(st, er);
             afd.crearAFD();
             setValores();
@@ -366,6 +391,10 @@ public class GUI extends javax.swing.JFrame {
     private void reiniciarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reiniciarButtonActionPerformed
         resetValores();
     }//GEN-LAST:event_reiniciarButtonActionPerformed
+
+    private void repaintBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repaintBTActionPerformed
+        if(st != null) paintTree();
+    }//GEN-LAST:event_repaintBTActionPerformed
 
     /**
      * @param args the command line arguments
@@ -419,7 +448,9 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTable puTable;
     private javax.swing.JTextField regexTF;
     private javax.swing.JButton reiniciarButton;
+    private javax.swing.JButton repaintBT;
     private javax.swing.JTable spTable;
+    private javax.swing.JLabel stLabel;
     private javax.swing.JTable trandTable;
     private javax.swing.JButton verficarButton;
     // End of variables declaration//GEN-END:variables
