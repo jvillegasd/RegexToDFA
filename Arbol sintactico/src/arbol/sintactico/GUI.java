@@ -56,29 +56,39 @@ public class GUI extends javax.swing.JFrame {
         int offsetY = 25;
         int hijosIzq = 0;
         int hijosDer = 0;
-        if(hijoIzq != null){
+        if(hijoIzq != null && hijoDer != null){
             hijosIzq = hijoIzq.getNumHijos();
             hijosIzq = (hijosIzq == 1)?0:hijosIzq*5;
-            g.drawLine(x, y, x - offsetX - hijosIzq + 10, y + offsetY);
-            paintTree(hijoIzq, g, depth + 1, x - offsetX - hijosIzq + 10, y + offsetY);
-        }
-        if(hijoDer!= null){
             hijosDer = hijoDer.getNumHijos();
             hijosDer = (hijosDer == 1)?0:hijosDer*5;
+            if(hijosIzq > hijosDer && hijosDer > 2) hijosIzq-=10;
+            else if(hijosDer > hijosIzq && hijosIzq > 2) hijosDer+=10;
+            g.drawLine(x, y, x - offsetX - hijosIzq + 10, y + offsetY);
+            paintTree(hijoIzq, g, depth + 1, x - offsetX - hijosIzq + 10, y + offsetY);
             g.drawLine(x, y, x + offsetX + hijosDer - 10, y + offsetY);
             paintTree(hijoDer, g, depth + 1, x + offsetX + hijosDer - 10, y + offsetY);
+            String indiceS = actual.getIndice() + "";
+            g.drawString(indiceS, x - 3, y + 20);
+        }else if(hijoIzq != null && hijoDer == null){
+            g.drawLine(x, y, x, y + offsetY + 10);
+            paintTree(hijoIzq, g, depth + 1, x, y + offsetY + 10);
+            String indiceS = actual.getIndice() + "";
+            g.drawString(indiceS, x + 1, y + 20);
+        }else{
+            String indiceS = actual.getIndice() + "";
+            g.drawString(indiceS, x - 3, y + 20);
         }
         g.setColor(Color.YELLOW);
         g.fillOval(x - 10, y - 10, 20, 20);
         String label = actual.getLabel() + "";
-        String indiceS = actual.getIndice() + "";
+        
         g.setColor(Color.BLACK);
         g.drawString(label, x - 3, y + 5);
-        g.drawString(indiceS, x - 3, y + 20);
+        
     }
     
     public void paintTree(){
-        int x = lienzoJSP.getWidth()/2+200;
+        int x = lienzoJSP.getWidth()/2+150;
         int y = 10;
         paintTree(st.getRaiz(), lienzoJSP.getGraphics(), 1, x, y);
     }
